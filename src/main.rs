@@ -2,7 +2,7 @@ use std::io;
 
 fn main() {
     struct Todo {
-        id: u32,
+        id: String,
         text: String,
     }
 
@@ -34,7 +34,7 @@ fn main() {
                 let todo = todo.trim().to_string();
 
                 todos.push(Todo {
-                    id: next_id,
+                    id: next_id.to_string(),
                     text: todo.trim().to_string(),
                 });
 
@@ -43,13 +43,33 @@ fn main() {
             "2" => {
                 println!("Todos:");
 
-                for todo in &todos {
-                    println!("{}: {}", todo.id, todo.text);
+                for (i, todo) in todos.iter().enumerate() {
+                    println!("{}. {} (id: {})", i + 1, todo.text, todo.id);
                 }
                 println!("");
             }
             "3" => {
-                println!("Choose a todo to edit");
+                println!("Choose a todo to edit by id: ");
+                let mut edit = String::new();
+
+                io::stdin()
+                    .read_line(&mut edit)
+                    .expect("Failed to read input");
+
+                let edit = edit.trim();
+
+                println!("Enter new text: ");
+                let mut new_text = String::new();
+
+                io::stdin().read_line(&mut new_text).expect("Failed to read input");
+
+                let new_text = new_text.trim().to_string(); 
+
+                if let Some(todo) = todos.iter_mut().find(|t| t.id == edit) {
+                    todo.text = new_text;
+                } else {
+                    println!("Todo with ID '{}' not found.", edit)
+                }
             }
             "4" => {
                 println!("Choose a todo to delete by id: ");
@@ -59,7 +79,7 @@ fn main() {
                     .read_line(&mut delete)
                     .expect("Failed to read input");
 
-                let delete: u32 = delete.trim().parse().expect("Not a valid number");
+                let delete = delete.trim();
 
                 println!("Deleting todo with id: {delete}");
 
